@@ -1,0 +1,647 @@
+#include <stdio.h>
+#include <iostream>
+#include<GL/gl.h>
+#include <GL/glut.h>
+#include <math.h>
+#include <stdlib.h>
+#include <cmath>
+#include<windows.h>
+#include<mmsystem.h>
+using namespace std;
+
+float speed, b = .5;
+
+int meghStatus ;
+int sunStatus  ;
+int moonStatus  ;
+
+
+int ballStatus1 = 0;
+int ballStatus2 =0;
+int ballStatus3 =0;
+int ballStatus4 =0;
+
+
+float sunX = 0;
+float sunY = 0;
+
+float moonX = 0;
+float moonY = 0;
+
+float cloudX = 0;
+float cloudY = 0;
+
+float ballX = 0;
+float ballY = 0;
+
+
+void DrawCircle(float cx, float cy, float r, int num_segments) {
+
+    glBegin(GL_TRIANGLE_FAN);
+    for (int i = 0; i < num_segments; i++)
+    {
+        float theta = 2.0f * 3.1415926f * float(i) / float(num_segments);//angle
+
+        float x = r * cos(theta);//x component
+        float y = r * sin(theta);//y component
+        glVertex2f(x + cx, y + cy);//output vertex
+
+    }
+    glEnd();
+}
+
+
+
+void drawSun(int x)
+{
+
+    glColor3f(1.000, 0.843, 0.000);
+    DrawCircle(900, 1300, 110, 1300);
+}
+void drawMoon(int x) {
+    glColor3f(.9, .9, .9);
+    DrawCircle(900, 200, 80, 1300);
+}
+
+void moveSun()
+{
+
+
+    if (sunStatus == 0)
+
+    {
+        sunY -= 0.13;
+
+    }
+
+    glPushMatrix();
+
+    glTranslatef(sunX, sunY, 0);
+
+    drawSun(1);
+    glPopMatrix();
+
+}
+
+
+void moveMoon()
+{
+
+if (moonStatus == 0)
+    {
+
+        if (moonY >= 1100)
+        {
+            moonY = 1100;
+
+        }
+        else
+        {
+            moonY += 0.3;
+
+        }
+
+    }
+
+
+    glPushMatrix();
+
+    glTranslatef(moonX, moonY, 0);
+
+    drawMoon(1);
+    glPopMatrix();
+
+}
+
+
+void cloud(int x) {
+    if (sunY <= -350)
+    {
+        glColor3f(.7, .7, .7);
+    }
+    else {
+        glColor3f(1.0, 1.0, 1.0);
+    }
+    DrawCircle(100, 1300, 60, 2000);//1
+    DrawCircle(150, 1350, 60, 2000);//2
+    DrawCircle(150, 1250, 60, 2000);//3
+    DrawCircle(200, 1300, 80, 2000);//4
+
+
+    DrawCircle(250, 1250, 60, 2000);//5
+    DrawCircle(250, 1350, 60, 2000);//6
+    DrawCircle(300, 1300, 55, 2000);//7
+
+    DrawCircle(700, 1300, 60, 2000);//8
+    DrawCircle(800, 1300, 80, 2000);//9
+    DrawCircle(900, 1300, 55, 2000);//10
+
+    if (sunY <= -350)
+    {
+        glColor3f(.7, .7, .7);
+    }
+    else { glColor3f(1.0, 1.0, 1.0); }
+
+    int transfer = 1200;
+    DrawCircle(100 + transfer, 1300, 60, 2000);//1
+    DrawCircle(150 + transfer, 1350, 60, 2000);//2
+    DrawCircle(150 + transfer, 1250, 60, 2000);//3
+
+
+    DrawCircle(200 + transfer, 1300, 80, 2000);//4
+    DrawCircle(250 + transfer, 1250, 60, 2000);//5
+    DrawCircle(250 + transfer, 1350, 60, 2000);//6
+    DrawCircle(300 + transfer, 1300, 55, 2000);//7
+    if (sunY <= -350)
+    {
+        glColor3f(.7, .7, .7);
+    }
+    else { glColor3f(1.0, 1.0, 1.0); }
+    transfer = 1000;
+    DrawCircle(700 + transfer, 1300, 60, 2000);//8
+    DrawCircle(800 + transfer, 1300, 80, 2000);//9
+    DrawCircle(900 + transfer, 1300, 55, 2000);//10
+}
+void moveCloud()
+
+{
+    if (meghStatus == 0)
+    {
+        cloudX += .06;
+    }
+    glPushMatrix();
+    glTranslatef(cloudX, cloudY, 0);
+    cloud(0.5);
+    glPopMatrix();
+
+
+
+}
+
+void sky() {
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.34, 0.808, 1.0);
+    glVertex2i(2000, 1500);
+    glVertex2i(0, 1500);
+    glColor3f(2.49, 1.87, 1.0);
+    glVertex2i(0, 970);
+    glVertex2i(2000, 970);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0,0,0);
+    glVertex2i(0, 0);
+    glVertex2i(2000, 0);
+    glVertex2i(2000, 970);
+    glVertex2i(0,970);
+    glEnd();
+
+}
+void star()
+{
+    int x = 0;int y = 0;
+    for (x = 0, y = 0;x < 1000, y < 500;x = x + 110, y = y + 60)
+    {
+        glColor3f(1.0, 1.0, 1.0);
+        glBegin(GL_TRIANGLES);
+        glVertex2f(100.0 + x, 1085.0 + y);
+        glVertex2f(85.0 + x, 1115.0 + y);
+        glVertex2f(115.0 + x, 1115.0 + y);
+
+        glEnd();
+
+
+        glColor3f(1.0, 1.0, 1.0);
+        glBegin(GL_TRIANGLES);
+        glVertex2f(100.0 + x, 1125.0 + y);
+        glVertex2f(85.0 + x, 1100.0 + y);
+        glVertex2f(115.0 + x, 1100.0 + y);
+        glEnd();
+    }
+        for (x = 900, y = 0;x<2000, y<500;x = x + 110, y = y + 60)
+        {
+            glColor3f(1.0, 1.0, 1.0);
+            glBegin(GL_TRIANGLES);
+            glVertex2f(100.0 + x, 1085.0 + y);
+            glVertex2f(85.0 + x, 1115.0 + y);
+            glVertex2f(115.0 + x, 1115.0 + y);
+
+            glEnd();
+
+            glColor3f(1.0, 1.0, 1.0);
+            glBegin(GL_TRIANGLES);
+            glVertex2f(100.0 + x, 1125.0 + y);
+            glVertex2f(85.0 + x, 1100.0 + y);
+            glVertex2f(115.0 + x, 1100.0 + y);
+            glEnd();
+        }
+
+
+}
+
+///////////////////////////////////////////////////////////////////
+void gameover()
+{
+    glBegin(GL_POLYGON);
+    glColor3f(1.000, 0.843, 0.000);
+    glVertex2i(0, 0);
+    glVertex2i(2000, 0);
+    glVertex2i(2000, 970);
+    glVertex2i(0,970);
+    glEnd();
+        sunStatus = 1;
+		moonStatus = 1;
+		meghStatus = 1;
+		ballStatus1 = 0;
+		ballStatus2 = 0;
+		ballStatus3 = 0;
+		ballStatus4 = 0;
+
+		sndPlaySound(NULL,NULL);
+
+}
+
+void gameEnd()// Success
+{
+    glBegin(GL_POLYGON);
+    glColor3f(0.000, 0.843, 0.000);
+    glVertex2i(0, 0);
+    glVertex2i(2000, 0);
+    glVertex2i(2000, 970);
+    glVertex2i(0,970);
+    glEnd();
+        sunStatus = 1;
+		moonStatus = 1;
+		meghStatus = 1;
+		ballStatus1 = 0;
+		ballStatus2 = 0;
+		ballStatus3 = 0;
+		ballStatus4 = 0;
+
+
+}
+void gameCrossingCheck() {
+    if (ballY>900) {
+			gameover();
+		}
+
+	if ((ballX > 50 && ballX < 249)) {
+		if (ballY<300 || ballY>460) {
+			gameover();
+		}
+	}
+	if (ballX > 400 && ballX < 600) {
+		if (ballY<580 || ballY>740) {
+			gameover();
+		}
+	}
+	if (ballX > 780 && ballX < 960) {
+		if (ballY<110 || (ballY>310 && ballY<610) || (ballY>780 && ballY<930)) {
+			gameover();
+		}
+	}
+
+	if (ballX > 1140 && ballX < 1320) {
+		if (ballY<340 || ballY>540) {
+			gameover();
+		}
+	}
+	if (ballX > 1500 && ballX < 1680) {
+		if (ballY<830) {
+			gameover();
+		}
+	}
+}
+///////////////////////////////////////////////////////////////////
+
+
+
+
+void mainfield(){
+
+
+ {
+
+    glBegin(GL_POLYGON); //new
+    //glColor3f(1.0, 1.0, 1.0);
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(100, 0);
+    glVertex2i(280, 0);
+    glVertex2i(280, 325);
+    glVertex2i(100, 325);
+    glEnd();}
+
+ {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(100, 525);
+    glVertex2i(280, 525);
+    glVertex2i(280, 970);
+    glVertex2i(100, 970);
+    glEnd();
+}
+     {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(460, 0);
+    glVertex2i(640, 0);
+    glVertex2i(640, 600);
+    glVertex2i(460, 600);
+    glEnd();
+
+    }
+
+     {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(460,800);
+    glVertex2i(640, 800);
+    glVertex2i(640, 970);
+    glVertex2i(460, 970);
+    glEnd();
+    }
+     {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(820,0);
+    glVertex2i(1000, 0);
+    glVertex2i(1000, 150);
+    glVertex2i(820, 150);
+    glEnd();
+    }
+        {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(820,350);
+    glVertex2i(1000, 350);
+    glVertex2i(1000, 650);
+    glVertex2i(820, 650);
+    glEnd();
+    }
+
+     {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(820,820);
+    glVertex2i(1000, 820);
+    glVertex2i(1000, 970);
+    glVertex2i(820, 970);
+    glEnd();
+
+    }
+ {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(1180,0);
+    glVertex2i(1360, 0);
+    glVertex2i(1360, 380);
+    glVertex2i(1180, 380);
+    glEnd();
+ }
+ {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(1180,580);
+    glVertex2i(1360, 580);
+    glVertex2i(1360, 970);
+    glVertex2i(1180, 970);
+    glEnd();
+    }
+ {
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.8f);
+    glVertex2i(1540,0);
+    glVertex2i(1720, 0);
+    glVertex2i(1720, 870);
+    glVertex2i(1540, 870);
+    glEnd();
+
+
+}
+{
+glBegin(GL_POLYGON); //new
+    glColor3f(0.0f,0.5f,0.0f);
+    glVertex2i(1720,0);
+    glVertex2i(2000, 0);
+    glVertex2i(2000, 200);
+    glVertex2i(1720,200);
+    glEnd();
+
+
+}
+}
+
+void skynight() {
+
+    if (sunY <= -300)
+    {
+        glColor3f(0.0, 0.0, 0.0);//blackish
+
+
+    }
+
+
+    else if (sunY <= -150)//Green Yellow
+    {
+        glColor3f(1.000, 0.843, 0.00);
+    }
+
+
+    glBegin(GL_POLYGON); //Sky
+
+    glVertex2i(2000, 1500);
+    glVertex2i(0, 1500);
+    glColor3f(2.49, 1.87, 1.0);
+    glVertex2i(0, 970);
+    glVertex2i(2000, 970);
+    glEnd();
+
+
+}
+
+
+
+//////////////////////////////
+
+
+void drawball(int x)
+{
+
+    glColor3f(1.000, 0.0, 0.000);
+    DrawCircle(50, 50, 20, 1300);
+}
+void moveball1()
+{
+    if (ballStatus1 ==1)
+    {
+        ballY += .8;
+    }
+    glPushMatrix();
+
+    glTranslatef(ballX, ballY, 0);
+
+    drawball(1);
+    glPopMatrix();
+}
+
+void moveball2()
+{
+    if (ballStatus2 ==1)
+    {
+        ballX += .8;
+    }
+    glPushMatrix();
+
+    glTranslatef(ballX, ballY, 0);
+
+    drawball(1);
+    glPopMatrix();
+}
+
+void moveball3()
+{
+
+    if (ballStatus3 ==1)
+    {
+        ballX -= .8;
+    }
+    glPushMatrix();
+
+    glTranslatef(ballX, ballY, 0);
+
+    drawball(1);
+    glPopMatrix();
+
+}
+
+void moveball4()
+{
+
+    if (ballStatus4 ==1)
+    {
+        ballY -= .8;
+    }
+    glPushMatrix();
+
+    glTranslatef(ballX, ballY, 0);
+
+    drawball(1);
+    glPopMatrix();
+}
+////////////////////////////////////////////////////////////////////////////////////
+void specialkey(int key, int x, int y)
+{
+    if(key==GLUT_KEY_UP)
+        {ballStatus1 =1;
+       // speed = .8;
+        }
+
+
+     if (key==GLUT_KEY_RIGHT)
+    {
+
+        ballStatus2 =1;
+        //speed = .8;
+
+    }
+
+    if (key==GLUT_KEY_LEFT)
+    {
+
+        ballStatus3 =1;
+        //speed = .8;
+
+    }
+    if (key==GLUT_KEY_DOWN)
+    {
+
+        ballStatus4 =1;
+      //  speed = .8;
+
+    }
+}
+void keyboard(unsigned char pause, int x, int y){
+    if (pause == ' ' )
+    {
+        ballStatus1 =0;
+        ballStatus2 =0;
+        ballStatus3 =0;
+        ballStatus4 =0;
+    }
+
+}
+//////////////////////////////
+
+void myDisplay(void)
+{
+
+    sky();
+
+    if (sunY <= -200)
+    {
+        skynight();
+
+
+    }
+
+    if (sunY <= -425)
+    {
+        star();
+    }
+
+    if (sunY <= -700)
+    {
+        gameover();
+    }
+    if (ballX >= 1675  && ballY <= 160)
+    {
+        gameEnd();
+
+    }
+
+
+    moveCloud();
+    moveSun();
+    moveMoon();
+    moveball1();
+    moveball2();
+    moveball3();
+    moveball4();
+    mainfield();
+
+   	gameCrossingCheck();
+
+    glFlush();
+    glutPostRedisplay();
+    glutSwapBuffers();
+
+}
+void myInit(void)
+{
+    glClearColor(0.0, 0.0, 1.0, 0.0);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glPointSize(0.0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, 2000.0, 0.0, 1500.0);
+}
+int main(int argc, char** argv)
+{
+
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(2000, 1500);
+    glutInitWindowPosition(0, 0);
+
+    glutCreateWindow("Move the Ball");
+    glutSpecialFunc(specialkey);
+    glutKeyboardFunc(keyboard);
+    glutDisplayFunc(myDisplay);
+
+    myInit();
+    sndPlaySound(TEXT("sound.wav"), SND_ASYNC|SND_LOOP);
+
+    glutMainLoop();
+}
